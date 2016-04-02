@@ -1,33 +1,46 @@
 # count up designated integer
 # https://codeiq.jp/challenge/1630
 
-def count7(num)
-  num.to_s.chars.select { |c| c == '7' }.size
+# def count7(num)
+#   num.to_s.chars.select { |c| c == '7' }.size
+# end
+
+# 桁の最小整数 t10(2) => 10
+def t10(t)
+  10 ** (t - 1)
+end
+
+# nのt桁目の数値 digit(98765, 3) => 7
+def digit(n, t)
+  (n / t10(t)) % 10
+end
+
+# nまでの整数のうちt桁目が7であるものを返す
+def count_digit7(n, t)
+  if digit(n, t) == 7 && t > 1
+    # t桁目が7である場合
+    # t桁目を1減らした数までの個数を計算し
+    # t-1桁目以下の整数+1を足す
+    count_digit7(n - t10(t), t) + n % t10(t) + 1
+  else
+    # それ以外の場合、n + 3 / 10 を各桁に行う
+    ((3 * t10(t) + n) / t10(t + 1)) * t10(t)
+  end
 end
 
 if __FILE__ == $0
-  lines = []
-
-  STDIN.each_line do |line|
-    lines << line.delete("\n")
+  n_a = []
+  STDIN.each_line do |n_s|
+    n_a << n_s.to_i
   end
-
-  lines.each do |line|
-    num_range = line.to_i
-    if num_range == 1
-      puts 0
-      next
+  n_a.each do |n|
+    t = 1
+    ans = 0
+    while n > t10(t - 1)
+      ans += count_digit7(n, t)
+      t += 1
     end
-
-    count_of_7 = 0
-    position = 1
-    while num_range > 1
-      puts "count: #{count_of_7}, num: #{num_range}"
-      num_range = (num_range + 3) / 10
-      count_of_7 += num_range * position
-      position *= 10
-    end
-
-    puts count_of_7
+    # 解答出力
+    puts ans
   end
 end
